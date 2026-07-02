@@ -472,7 +472,7 @@
                     </defs>
                 </svg>
             </div>
-			<div class="footer-grid">
+			<div class="footer-grid" id="d2d-images" style="display: block;">
             	<div class="footer-col">
         			<img src="images/animatedD2D.jpeg" width="100%">           
             	</div>
@@ -550,19 +550,23 @@
             const d2dFlow = document.getElementById('flow-d2d');
             const d2pFlow = document.getElementById('flow-d2p');
             const rmpNode = document.getElementById('node-rmp');
+	    	const d2dImagesId = document.getElementById('d2d-images');
 
             if (mode === 'all') {
                 d2dFlow.style.opacity = '1';
                 d2pFlow.style.opacity = '1';
                 rmpNode.style.opacity = '1';
+				d2dImagesId .style.display= 'block';
             } else if (mode === 'd2d') {
                 d2dFlow.style.opacity = '1';
                 d2pFlow.style.opacity = '0.1';
                 rmpNode.style.opacity = '1';
+				d2dImagesId .style.display= 'block';
             } else if (mode === 'd2p') {
                 d2dFlow.style.opacity = '0.1';
                 d2pFlow.style.opacity = '1';
                 rmpNode.style.opacity = '0.1';
+				d2dImagesId .style.display= 'none';
             }
         }
 
