@@ -662,17 +662,18 @@ province scaling roadmaps.</p>
 
 			// form the message and change DOM based on success of email sending
 			var contactFieldset = document.getElementById("contactFieldset");
-			var loader = document.createElement('div');
+			//var loader = document.createElement('div');
 			var message;
 			if(contactFieldset.nextElementSibling && contactFieldset.nextElementSibling.tagName === 'P'){
 				contactFieldset.nextElementSibling.remove();
 			}
 			message = document.createElement('P');
-			loader.className = 'loader';
-			contactFieldset.after(loader);
+			message.className = 'loader';
+			contactFieldset.after(message);
+			//console.log(contactFieldset.nextElementSibling.outerHTML);
 			
 			// 4. Trigger your chosen email transmission method below
-			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ contactFieldset.disabled = true; loader.remove(); message.textContent = 'Email sent successfully!'; message.style.color = 'green'; contactFieldset.after(message); /*console.log(message);*/}).catch((error)=> {loader.remove(); message.textContent = 'Email could not be sent!'; message.style.color = 'red'; contactFieldset.after(message); /*console.error(message+" Failed to send:", error);*/});
+			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ contactFieldset.disabled = true; message.classList.remove("loader"); message.textContent = 'Email sent successfully!'; message.style.color = 'green'; /*contactFieldset.after(message); console.log(message);*/}).catch((error)=> {message.classList.remove('loader'); message.textContent = 'Email could not be sent!'; message.style.color = 'red'; /*contactFieldset.after(message); console.error(message+" Failed to send:", error);*/});
 		});
 		
     </script>
