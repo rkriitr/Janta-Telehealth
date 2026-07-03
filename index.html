@@ -643,8 +643,14 @@ province scaling roadmaps.</p>
 			//console.log(data.country);
 
 			// form the message and change DOM based on success of email sending
-			const constantFieldset = document.getElementById("contactFieldset"); 
-			const message = document.createElement('P');
+			const constantFieldset = document.getElementById("contactFieldset");
+			const message;
+			if(constantFieldset.nextElementSibling && constantFieldset.nextElementSibling.tagName === 'P'){
+				constantFieldset.nextElementSibling.remove();
+				message = constantFieldset.nextElementSibling;
+			} else{
+				message = document.createElement('P');
+			}
 
 			// 4. Trigger your chosen email transmission method below
 			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ constantFieldset.disabled = true; message.textContent = 'Email sent successfully!'; message.style.color = 'green'; constantFieldset.after(message); /*console.log(message);*/}).catch((error)=> {message.textContent = 'Email could not be sent!'; message.style.color = 'red'; constantFieldset.after(message); /*console.error(message+" Failed to send:", error);*/});
