@@ -303,10 +303,10 @@
 	
 		/* Automatically adds a red asterisk after the label of any required input */
 		input:required::placeholder {color: red;}
-		//textarea:required::placeholder {color: red;}
+		textarea:required::placeholder {color: red;}
 		/* Optional: Fallback for older WebKit browsers */
 		input:required::-webkit-input-placeholder {color: red;}
-		//textarea:required::-webkit-input-placeholder {color: red;}
+		textarea:required::-webkit-input-placeholder {color: red;}
 	
 	    .btn-download {
 	            display: inline-block;
@@ -545,7 +545,7 @@ province scaling roadmaps.</p>
                 			<input type="text" name="email" placeholder="Email-Id*" required />
                 			<input type="text" name="call" placeholder="Phone no*" required />
                 			<input type="text" name="country" placeholder="Country*" required />
-							<textarea name="message" placeholder="Message*"  rows="4" cols="50" required /></textarea>
+							<textarea name="message" placeholder="Message*"  rows="4" cols="50" required ></textarea>
 	    					<button class="btn-download" type="submit">Send me the Pitch deck</button>
 						</fieldset>
 					</form>
