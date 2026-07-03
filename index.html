@@ -643,8 +643,8 @@ province scaling roadmaps.</p>
 			//console.log(data.country);
 
 			// form the message and change DOM based on success of email sending
-			const constantFieldset = document.getElementById("contactFieldset");
-			const message;
+			var constantFieldset = document.getElementById("contactFieldset");
+			var message;
 			if(constantFieldset.nextElementSibling && constantFieldset.nextElementSibling.tagName === 'P'){
 				constantFieldset.nextElementSibling.remove();
 				message = constantFieldset.nextElementSibling;
