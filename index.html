@@ -248,6 +248,7 @@
         .profile-details {
             flex: 1;
             min-width: 300px;
+            text-align: justify;
         }
 
         .profile-details h3 {
@@ -266,8 +267,8 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: white;
             border-radius: 16px;
-            padding: 60px 40px;
-            text-align: center;
+            padding: 40px 40px;
+            text-align: justify;
             margin-top: 60px;
             border-top: 4px solid var(--accent);
         }
@@ -275,6 +276,7 @@
         .cta-banner h2 {
             font-size: 2rem;
             margin-bottom: 15px;
+            text-align: center;
         }
 
         .cta-banner p {
@@ -284,12 +286,12 @@
         }
 	
 		.cta-grid {
-	            width: clamp(235px, 50vw, 1200px);
+	            width: clamp(268px, 50vw, 1200px);
 	            margin: auto;
 	            display: grid;
 	            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 	            gap: 5px;
-	        }
+	    }
 	
 		.flexible-fieldset {
 			flex: 1;
@@ -298,6 +300,10 @@
 			display: flex;
 			flex-direction: column;
 		}
+	
+		/* Automatically adds a red asterisk after the label of any required input */
+		input:required::placeholder {color: red;}
+		textarea:required::placeholder {color: red;}
 	
 	    .btn-download {
 	            display: inline-block;
@@ -530,17 +536,16 @@ province scaling roadmaps.</p>
             	<div class="footer-col">
             		<form id="contactForm">
 						<fieldset id="contactFieldset" class="flexible-fieldset">
-							<input type="text" name="name" placeholder="Your Name" required />
-							<input type="text" name="company" placeholder="Your Company's Name" required />
-                			<input type="text" name="designation" placeholder="Designation" required />
-                			<input type="text" name="email" placeholder="Email-Id" required />
-                			<input type="text" name="call" placeholder="Phone no" required />
-							<textarea name="message" placeholder="Message"  rows="4" cols="50" required /></textarea>
+							<input type="text" name="name" placeholder="Your Name*" required />
+							<input type="text" name="company" placeholder="Your Company's Name*" required />
+                			<input type="text" name="designation" placeholder="Designation*" required />
+                			<input type="text" name="email" placeholder="Email-Id*" required />
+                			<input type="text" name="call" placeholder="Phone no*" required />
+                			<input type="text" name="country" placeholder="Country*" required />
+							<textarea name="message" placeholder="Message*"  rows="4" cols="50" required /></textarea>
 	    					<button class="btn-download" type="submit">Send me the Pitch deck</button>
 						</fieldset>
 					</form>
-            		<!-- JavaScript Trigger Emulating Secure Pipeline Fetch of Stored PowerPoint PDF Asset -->
-            		<!-- <button class="btn-download" onclick="executePitchDeckDownload()">Download Pitch deck</button> -->
             	</div>
             </div>
        </div>
@@ -610,23 +615,6 @@ province scaling roadmaps.</p>
             }
         }
 
-        /**
-         * Simulates structural validation and delivers the referenced file component
-         */
-        function executePitchDeckDownload() {
-            // Programmatically establish anchor link to source attachment tracking
-			const blob = new Blob(["Janta_Telehealth_pitch_deck_ppt.pdf"], { type: "application/pdf"});
-		  
-		  
-			const blobUrl = window.URL.createObjectURL(blob);            
-			const anchor = document.createElement('a');
-		            anchor.href = blobUrl;// Direct pipeline anchor target mapping placeholder
-		            anchor.setAttribute('download', 'Janta_Telehealth_Pitch_Deck');
-		            document.body.appendChild(anchor);
-		            anchor.click();
-		            document.body.removeChild(anchor);
-	    }
-
 		/**
          * Emails the request for pitchdeck
          */
@@ -642,20 +630,21 @@ province scaling roadmaps.</p>
 	   		data.title = "Send me the Pitch deck";
 			
 			// Access individual inputs
-			console.log(data.name); 
-			console.log(data.company);
-			console.log(data.designation);
-			console.log(data.email);
-			console.log(data.title);
-			console.log(data.message);
-			console.log(data.call);
+			//console.log(data.name); 
+			//console.log(data.company);
+			//console.log(data.designation);
+			//console.log(data.email);
+			//console.log(data.title);
+			//console.log(data.message);
+			//console.log(data.call);
+			//console.log(data.country);
 
 			// form the message and change DOM based on success of email sending
 			const constantFieldset = document.getElementById("contactFieldset"); 
 			const message = document.createElement('P');
 
 			// 4. Trigger your chosen email transmission method below
-			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ constantFieldset.disabled = true; message.textContent = 'Email sent successfully'; message.style.color = 'green'; constantFieldset.after(message); console.log("Email sent successfully!");}).catch((error)=> {message.textContent = 'Email could not be sent'; message.style.color = 'red'; constantFieldset.after(message); console.error("Failed to send:", error);});
+			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ constantFieldset.disabled = true; message.textContent = 'Email sent successfully!'; message.style.color = 'green'; constantFieldset.after(message); console.log(message);}).catch((error)=> {message.textContent = 'Email could not be sent!'; message.style.color = 'red'; constantFieldset.after(message); console.error(message+" Failed to send:", error);});
 		});
 		
     </script>
