@@ -647,10 +647,8 @@ province scaling roadmaps.</p>
 			var message;
 			if(constantFieldset.nextElementSibling && constantFieldset.nextElementSibling.tagName === 'P'){
 				constantFieldset.nextElementSibling.remove();
-				message = constantFieldset.nextElementSibling;
-			} else{
-				message = document.createElement('P');
 			}
+			message = document.createElement('P');
 
 			// 4. Trigger your chosen email transmission method below
 			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ constantFieldset.disabled = true; message.textContent = 'Email sent successfully!'; message.style.color = 'green'; constantFieldset.after(message); /*console.log(message);*/}).catch((error)=> {message.textContent = 'Email could not be sent!'; message.style.color = 'red'; constantFieldset.after(message); /*console.error(message+" Failed to send:", error);*/});
