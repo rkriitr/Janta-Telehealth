@@ -282,18 +282,35 @@
             max-width: 600px;
             margin: 0 auto 30px auto;
         }
-
-        .btn-download {
-            display: inline-block;
+	
+		.cta-grid {
+	            width: clamp(350px, 50vw, 1200px);
+	            margin: auto;
+	            display: grid;
+	            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+	            gap: 5px;
+	        }
+	
+		.flexible-fieldset {
+			flex: 1;
+			min-width: 0; 
+			/* Critical line for responsiveness */
+			display: flex;
+			flex-direction: column;
+		}
+	
+	    .btn-download {
+	            display: inline-block;
             background-color: var(--accent);
             color: white;
-            padding: 16px 36px;
+            padding: 5px 5px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 700;
             transition: background 0.2s, transform 0.1s;
             cursor: pointer;
             border: none;
+			margin: 5px;
         }
 
         .btn-download:hover {
@@ -501,17 +518,32 @@
                 </p>
             </div>
         </div>
-
+		
         <!-- Corporate Pitch Presentation Download Section -->
         <div class="cta-banner">
             <h2>Investment Proposal &amp; Financial Framework</h2>
-            <p>Access the complete fundraising documentation, target parameters, transactional unit economics formulas, and multi-province scaling roadmaps.</p>
-            
-            <!-- JavaScript Trigger Emulating Secure Pipeline Fetch of Stored PowerPoint PDF Asset -->
-            <button class="btn-download" onclick="executePitchDeckDownload()">Download Pitch deck</button>
-            
-        </div>
-
+	    <div class="cta-grid">
+            	<div class="footer-col">
+            		<p>Please drop a mail to access the complete fundraising documentation, target parameters, transactional unit economics formulas, and multi-
+province scaling roadmaps.</p>
+				</div>
+            	<div class="footer-col">
+            		<form id="contactForm">
+						<fieldset id="contactFieldset" class="flexible-fieldset">
+							<input type="text" name="name" placeholder="Your Name" required />
+							<input type="text" name="company" placeholder="Your Company's Name" required />
+                			<input type="text" name="designation" placeholder="Designation" required />
+                			<input type="text" name="email" placeholder="Email-Id" required />
+                			<input type="text" name="call" placeholder="Phone no" required />
+							<textarea name="message" placeholder="Message"  rows="4" cols="50" required /></textarea>
+	    					<button class="btn-download" type="submit">Send me the Pitch deck</button>
+						</fieldset>
+					</form>
+            		<!-- JavaScript Trigger Emulating Secure Pipeline Fetch of Stored PowerPoint PDF Asset -->
+            		<!-- <button class="btn-download" onclick="executePitchDeckDownload()">Download Pitch deck</button> -->
+            	</div>
+            </div>
+       </div>
     </div>
 
     <!-- Corporate Information Context Footer -->
@@ -535,8 +567,16 @@
         </div>
     </footer>
 
+    <!-- Include the EmailJS SDK in your HTML -->
+    <script type="text/javascript"  src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <!-- Interactive Layer Orchestration Logic Scripts -->
-    <script>
+    <script type="text/javascript">
+		/**
+         * to send email via emailJS, public key is required
+         */
+		emailjs.init({ publicKey: "zUivy_q6tTPURjGIq" });
+		
         /**
          * Orchestrates the active visual visibility maps across the vector network grid
          */
@@ -575,17 +615,49 @@
          */
         function executePitchDeckDownload() {
             // Programmatically establish anchor link to source attachment tracking
-	const blob = new Blob(["Janta_Telehealth_pitch_deck_ppt.pdf"], { type: "application/pdf"});
-  
-  
-	const blobUrl = window.URL.createObjectURL(blob);            
-	const anchor = document.createElement('a');
-            anchor.href = blobUrl;// Direct pipeline anchor target mapping placeholder
-            anchor.setAttribute('download', 'Janta_Telehealth_Pitch_Deck');
-            document.body.appendChild(anchor);
-            anchor.click();
-            document.body.removeChild(anchor);
-        }
+			const blob = new Blob(["Janta_Telehealth_pitch_deck_ppt.pdf"], { type: "application/pdf"});
+		  
+		  
+			const blobUrl = window.URL.createObjectURL(blob);            
+			const anchor = document.createElement('a');
+		            anchor.href = blobUrl;// Direct pipeline anchor target mapping placeholder
+		            anchor.setAttribute('download', 'Janta_Telehealth_Pitch_Deck');
+		            document.body.appendChild(anchor);
+		            anchor.click();
+		            document.body.removeChild(anchor);
+	    }
+
+		/**
+         * Emails the request for pitchdeck
+         */
+		document.getElementById('contactForm').addEventListener('submit', function(event) {
+			// 1. Stop the page from reloading
+			event.preventDefault(); 
+			
+			// 2. Automatically grab all text fields via FormData
+			const formData = new FormData(event.target);
+	  
+			// 3. Convert fields to a clean JavaScript object
+			const data = Object.fromEntries(formData.entries());
+	   		data.title = "Send me the Pitch deck";
+			
+			// Access individual inputs
+			console.log(data.name); 
+			console.log(data.company);
+			console.log(data.designation);
+			console.log(data.email);
+			console.log(data.title);
+			console.log(data.message);
+			console.log(data.call);
+
+			// form the message and change DOM based on success of email sending
+			const constantFieldset = document.getElementById("contactFieldset"); 
+			const message = document.createElement('P');
+
+			// 4. Trigger your chosen email transmission method below
+			emailjs.send("service_Pitchdeck", "template_i31q3j9", data).then(()=>{ constantFieldset.disabled = true; message.textContent = 'Email sent successfully'; message.style.color = 'green'; constantFieldset.after(message); console.log("Email sent successfully!");}).catch((error)=> {message.textContent = 'Email could not be sent'; message.style.color = 'red'; constantFieldset.after(message); console.error("Failed to send:", error);});
+		});
+		
     </script>
 
 </body></html>
