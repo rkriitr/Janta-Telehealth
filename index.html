@@ -344,14 +344,10 @@
 		  animation: l3 1s infinite linear;
 		}
 		@keyframes l3 {to{transform: rotate(1turn)}}
+		
 		/* internal padding to inputs*/
-		input[type="text"] {
-		    padding-left: 1px;
-		    padding-right: 1px;
-		}
-		textarea {
-			padding-left: 2px;
-		    padding-right: 2px;
+		.inner-padding {
+			padding: 0px 2px;
 		}
 		
         /* Footer Core */
@@ -572,7 +568,7 @@ province scaling roadmaps.</p>
                 			<input type="text" name="email" placeholder="Email-Id*" required />
                 			<input type="text" name="call" placeholder="Phone no*" required />
                 			<input type="text" name="country" placeholder="Country*" required />
-							<textarea name="message" placeholder="Message*"  rows="4" cols="50" required ></textarea>
+							<textarea name="message" class="inner-padding" placeholder="Message*"  rows="4" cols="50" required ></textarea>
 	    					<button class="btn-download" type="submit">Send me the Pitch deck</button>
 						</fieldset>
 					</form>
