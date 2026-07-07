@@ -808,8 +808,16 @@ province scaling roadmaps.</p>
 		 **/
         const dropdownBtn = document.getElementById('dropdownBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
-        dropdownMenu.classList.remove('active');
-        dropdownBtn.setAttribute('aria-expanded', 'false');
+
+		// Reset top right drop down menu on load of this page
+		window.addEventListener('pageshow', function (event) {
+		  if (event.persisted) {
+		    // Force a full reload to reset the HTML and CSS
+		    // window.location.reload(); 
+	        dropdownMenu.classList.remove('active');
+	        dropdownBtn.setAttribute('aria-expanded', 'false');
+		  }
+		});
 
         // Toggle the menu visibility on click
         dropdownBtn.addEventListener('click', (e) => {
