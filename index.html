@@ -808,6 +808,8 @@ province scaling roadmaps.</p>
 		 **/
         const dropdownBtn = document.getElementById('dropdownBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
+        dropdownMenu.classList.remove('active');
+        dropdownBtn.setAttribute('aria-expanded', 'false');
 
         // Toggle the menu visibility on click
         dropdownBtn.addEventListener('click', (e) => {
