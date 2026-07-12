@@ -255,7 +255,7 @@ font-family: sans-serif;
             const response = await fetch(url, {
                 method: 'POST', 			
                 headers: {
-                    'Authorization': `Bearer ${idToken}`,
+                    //'Authorization': `Bearer ${idToken}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ payloadParts: payloadParts })		
