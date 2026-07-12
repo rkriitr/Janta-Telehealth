@@ -1,289 +1,300 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prescription Parser</title>
-    <style>
-       /* Top right menu drop down*/
-	    .site-header {
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescription Parser</title>
+<script src="https://google.com" async defer></script>
+<style>
+ /* Top right menu drop down*/
+	.site-header {
 			display: grid;
 			grid-template-columns: 1fr auto 1fr; /* Centers the middle item perfectly */
 		}
 
-        .navbar {
-            padding: 10px 24px;
-            display: flex;
-            justify-content: flex-end; /* Pushes content to the right side */
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            position: relative;
-	    	justify-self: end;
-        }
+.navbar {
+padding: 10px 24px;
+display: flex;
+justify-content: flex-end; /* Pushes content to the right side */
+align-items: center;
+box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+position: relative;
+		justify-self: end;
+}
 
-        .dropdown {
-            position: relative;
-        }
+.dropdown {
+position: relative;
+}
 		
-        .menu-trigger {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
+.menu-trigger {
+background: none;
+border: none;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 4px;
+border-radius: 50%;
+transition: background-color 0.2s;
+}
 
-        .menu-trigger:hover {
-            background-color: #f0f2f5;
-        }
+.menu-trigger:hover {
+background-color: #f0f2f5;
+}
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #4f46e5;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
+.avatar {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+background-color: #4f46e5;
+color: white;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: bold;
+}
 
-        .dropdown-menu {
-            position: absolute;
-            right: 0; /* Aligns the menu box flush with the right edge */
-            top: calc(100% + 8px); /* Sits just below the trigger button */
-            background-color: #fff;
-            min-width: 200px;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            opacity: 0;
-            transform: translateY(-10px);
-            visibility: hidden;
-            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-            z-index: 100;
-        }
+.dropdown-menu {
+position: absolute;
+right: 0; /* Aligns the menu box flush with the right edge */
+top: calc(100% + 8px); /* Sits just below the trigger button */
+background-color: #fff;
+min-width: 200px;
+border-radius: 8px;
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+border: 1px solid #e5e7eb;
+opacity: 0;
+transform: translateY(-10px);
+visibility: hidden;
+transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+z-index: 100;
+}
 		
-        .dropdown-menu.active {
-            opacity: 1;
-            transform: translateY(0);
-            visibility: visible;
-        }
+.dropdown-menu.active {
+opacity: 1;
+transform: translateY(0);
+visibility: visible;
+}
 
-        .dropdown-menu a {
-            display: block;
-            padding: 12px 16px;
-            color: #374151;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
+.dropdown-menu a {
+display: block;
+padding: 12px 16px;
+color: #374151;
+text-decoration: none;
+font-size: 14px;
+transition: background-color 0.2s;
+}
 
-        .dropdown-menu a:hover {
-            background-color: #f9fafb;
-            color: #111827;
-        }
+.dropdown-menu a:hover {
+background-color: #f9fafb;
+color: #111827;
+}
 
-        .dropdown-divider {
-            border-top: 1px solid #e5e7eb;
-            margin: 4px 0;
-        }
+.dropdown-divider {
+border-top: 1px solid #e5e7eb;
+margin: 4px 0;
+}
 
-        .dropdown-menu a.logout {
-            color: #dc2626;
-        }
-        
-        .dropdown-menu a.logout:hover {
-            background-color: #fef2f2;
-        }
+.dropdown-menu a.logout {
+color: #dc2626;
+}
 
-		/* file upload */
-		#drop-zone {
-		    border: 2px dashed #ccc;
-		    border-radius: 8px;
-		    padding: 40px;
-		    text-align: center;
-		    cursor: pointer;
-		    background: #f9f9f9;
-		    transition: background 0.2s, border-color 0.2s;
-		}
-		#drop-zone.dragover {
-		    background: #e1f5fe;
-		    border-color: #03a9f4;
-		}
-		#file-list {
-		    margin-top: 15px;
-		    font-family: sans-serif;
-		}
+.dropdown-menu a.logout:hover {
+background-color: #fef2f2;
+}
+
+/* file uipload */
+#drop-zone {
+border: 2px dashed #ccc;
+border-radius: 8px;
+padding: 40px;
+text-align: center;
+cursor: pointer;
+background: #f9f9f9;
+transition: background 0.2s, border-color 0.2s;
+}
+#drop-zone.dragover {
+background: #e1f5fe;
+border-color: #03a9f4;
+}
+#file-list {
+margin-top: 15px;
+font-family: sans-serif;
+}
+
 
 		/* Automatically adds a red asterisk after the label of any required input */
 		input:required::placeholder {color: red;}
 
-    </style>
+</style>
 </head>
 <body>
-    <!-- Header / Branding Framework -->
-    <header>
-        <div>			
+
+
+<!-- Header / Branding Framework -->
+<header>
+<div>			
 			<!-- Top Right Dropdown Menu -->
-		    <nav class="navbar">
-		        <div class="dropdown">
-		            <!-- Trigger -->
-		            <button class="menu-trigger" id="dropdownBtn" aria-haspopup="true" aria-expanded="false">
-		                <div class="avatar"><img src="images/menu.png" alt="Menu" width="25" height="25"></div>
-		            </button>
+		<nav class="navbar">
+		<div class="dropdown">
+		<!-- Trigger -->
+		<button class="menu-trigger" id="dropdownBtn" aria-haspopup="true" aria-expanded="false">
+		<div class="avatar"><img src="images/menu.png" alt="Menu" width="25" height="25"></div>
+		</button>
 		
-		            <!-- Menu Content -->
-		            <div class="dropdown-menu" id="dropdownMenu">
-		                <a href="index.html">Investment Proposal</a>
-		                <a href="prescription.html">convert Prescription</a>
-		                <!-- <a href="#profile">My Profile</a>
-		                <a href="#settings">Account Settings</a>
-		                <a href="#help">Help & Support</a>
-		                <div class="dropdown-divider"></div>
-		                <a href="#logout" class="logout">Log Out</a> -->
-		            </div>
-		        </div>
-		    </nav>
+		<!-- Menu Content -->
+		<div class="dropdown-menu" id="dropdownMenu">
+		<a href="index.html">Investment Proposal</a>
+		<a href="prescription.html">convert Prescription</a>
+		<!-- <a href="#profile">My Profile</a>
+		<a href="#settings">Account Settings</a>
+		<a href="#help">Help & Support</a>
+		<div class="dropdown-divider"></div>
+		<a href="#logout" class="logout">Log Out</a> -->
 		</div>
-    </header>
+		</div>
+		</nav>
+</header>
 
-	<!-- content -->
-	<div>
-		<div id="drop-zone">
-			<p>Drag & drop files here, or click to browse / open camera</p>
-	    	<!-- The accept and capture attributes prompt mobile browsers to offer the camera -->
-			<input type="file" id="file-input" accept="image/*" capture="environment" hidden multiple>
-		</div>
-		<h3>Selected Files:</h3>
-		<ul id="file-list"></ul>
+<!-- content -->
+<div>
+	<div id="drop-zone">
+
+		<p>Drag & drop files here, or click to browse / open camera</p>
+
+
+		<!-- The accept and capture attributes prompt mobile browsers to offer the camera -->
+
+		<input type="file" id="file-input" accept="image/*" capture="environment" hidden multiple>
+
 	</div>
-	<input type="text" id="GAPIKey" placeholder="Your Google AI Studio API key*" value="AQ.Ab8RN6InvhcWYdR1nKDmcUXRN8WFdmMVblQmlk47h_HgIXrOhg" required>
-	<button type="button" id="txtfyButton">Textify</button>
-	<p>Do not have Google AI Studio API key?Follow the instructions:</p>
-	<p>
-		<ul>
-			<li>Click Create API key.</li>
-			<li>Choose a project or create a new one.</li>
-			<li>Copy the generated key and save it for future use</li>
-			<li>Paste it back into this website's settings input.</li>
-		</ul>
-	</p>
-	<p>Now <a href="https://aistudio.google.com/app/apikey">create one</a> quickly</p>
-	<h3>Analysis Result:</h3>  
-	<div id="output">Upload an image and click "Parse Image" to see results.</div>
 
-   
-<!-- Import the Google GenAI SDK directly from a CDN -->
-<!-- <script type="importmap">
-	{
-		"imports": {
-			"@google/generative-ai": "https://esm.run",
-			"@google/generative-ai": "https://jsdelivr.net"   
-		}
-	}
-</script> -->
+	<h3>Selected Files:</h3>
+
+	<ul id="file-list"></ul>
+</div>
+
+<button type="button" id="txtfyButton">Textify</button>
+<p>Do not have Google AI Studio API key?Follow the instructions:</p>
+<p>
+	<ul>
+		<li>Click Create API key.</li>
+		<li>Choose a project or create a new one.</li>
+		<li>Copy the generated key and save it for future use</li>
+		<li>Paste it back into this website's settings input.</li>
+	</ul>
+</p>
+<p>Now <a href="https://aistudio.google.com/app/apikey">create one</a>&nbsp;quickly</p>
+
+
+<button id="loginBtn">1. Login & Get Token</button>
+<button id="callFuncBtn" disabled>2. Call Cloud Function</button>
+
+<h3>Analysis Result:</h3>
+<div id="output">Upload an image and click "Parse Image" to see results.</div>
+
 
 <script>
-// call AI to convert image to text, extract medicines, patient, doctor, detail
-//import { GoogleGenAI } from '@google/generative-ai';
-//import fs from "fs";
+    async function analyzeImages(fileList) {
+        if (fileList==null && fileList.length==0) {
+            output.innerText = "Please select an image file first.";
+            return;
+        }
+    
+        try {
+            submitBtn.disabled = true;
+            output.innerText = "Analyzing image... Please wait...";
 
-// Convert the File object to the required Base64 Gemini format object 
-function fileToGenerativePart(file) {    
-	return new Promise((resolve, reject) => {      
-		const reader = new FileReader();      
-		reader.onloadend = () => {
-			// Extract the base64 data string by splitting off the data URL prefix
-			const base64Data = reader.result.split(',')[1];
-			resolve({
-				inlineData: {
-					data: base64Data,
-					mimeType: file.type
-				},
-			}); 
-		};      
-		reader.onerror = reject;    
-		reader.readAsDataURL(file);
-	});
-}
-	
-//const ai = new GoogleGenAI({ apiKey: 'AQ.Ab8RN6InvhcWYdR1nKDmcUXRN8WFdmMVblQmlk47h_HgIXrOhg' });
-var apikeyIn = document.getElementById('GAPIKey').value;
-const MODEL = "gemini-3.5-flash";
-const url = `https://googleapis.com/${MODEL}:generateContent?key=${apikeyIn}`;
-const proxyUrl = `https://rkriitr.github.io/`;
+            // Convert file to base64 structure
+            const imagePromises = fileList.map(fileToGenerativePart);
+            const imageParts = await Promise.all(imagePromises);
+            const textPrompt = {			
+                text: "Extract information from uploaded medical prescriptions. Return a JSON object with the following schema: {doctorName: string, patientName: string, date: string, medications: [{name: string, dosage: string, frequency: string, duration: string}]}"
+            };
 
-// Call the Gemini API to analyze the images of fileList type array
-async function analyzeImages(fileList) {   
-	if (fileList==null && fileList.length==0) {
-		output.innerText = "Please select an image file first.";
-		return;    
-	}   
-	
-	try {  
-		submitBtn.disabled = true;     
-		output.innerText = "Analyzing image... Please wait...";
-		
-		// Initialize the Gemini API client
-		//const ai = new GoogleGenAI({ apiKey: apikeyIn });
-         
-		// Convert file to base64 structure
-		const imagePromises = fileList.map(fileToGenerativePart);
-		const imageParts = await Promise.all(imagePromises);   
-		const textPrompt = {
-			text: "Extract information from uploaded medical prescriptions. Return a JSON object with the following schema: {doctorName: string, patientName: string, date: string, medications: [{name: string, dosage: string, frequency: string, duration: string}]}"
-		};
+            // 3. Assemble everything into a single, flat contents parts array
+            const payloadParts = [textPrompt, ...imageParts];
 
-		// 3. Assemble everything into a single, flat contents parts array     
-		const payloadParts = [textPrompt, ...imageParts];
+            const url = 'https://analyseimages-108214119816.asia-south1.run.app';
+            //var accessToken = "ya29.a0ARGnu0aYAHiU8uroiJ9wdpwtk8IC9wtkQg9QlVzaJds7H_GmB6XGfbg2sbMxc0nG3oMyWmyQvVArF55uqhticaRCHiNj-4O58k0y-a3QutEMTL81db4KnLlPntjZWGn4dD4VaXtUDQNBcZIDBSc6ticZXo3MKN9AABTzZ6WmgzntrnELwnbcKRk7baanNr3_eG4RHcwaCgYKAXwSARESFQHGX2MiHq1K2b5cDYpwQEF8ISBGVw0206"
+            //GetAccessTokenForRequestAsync();
+            
+            // Configuration
+            const CLIENT_ID = '108214119816-d6p8gaodsu3bcan7efnctd7v6rmpet7i.apps.googleusercontent.com';         
+            let tokenClient;
+            let idToken = null;
 
-		// Send request using the fastest multimodal model: gemini-2.5-flash    
-		/**
-		const response = await ai.interactions.create({        
-			model: 'gemini-3.5-flash',    
-			contents: [
-				{
-					role: 'user',
-					parts: payloadParts
-				}
-			],
-			config: {
-				responseMimeType: "application/json"
-			}              
-		});
- 		**/
-           
-		const response = await fetch(url, {   
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },    
-			body: JSON.stringify({ 
-				"contents": [{ 
-					role: 'user',
-					parts: payloadParts                        
-				}]    
-			})  
-		});
-		
-		if (!response.ok) {
-	      throw new Error(`HTTP error! status: ${response.status}`);
-	    }
-		
-		// Display response text    
-		output.innerText = response.output_text;        
-	} catch (error) {    
-		console.error("Error calling Gemini API:", error);
-		output.innerText = "An error occurred: " + error.message;
-	} finally {   
-		submitBtn.disabled = false;   
-	}  
-}
+            // Initialize Google Identity Services
+            window.onload = function () {
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: 'openid https://googleapis.com', 
+                    callback: (tokenResponse) => {
+                        // Note: For Cloud Functions, we specifically need an ID Token.
+                        // Google's initTokenClient returns an Access Token by default.
+                        // To fetch a valid OIDC ID Token from the browser, we use the identity picker or standard flow.
+                        if(tokenResponse && tokenResponse.access_token) {
+                            idToken = tokenResponse.credential;
+                        }
+                    }
+                });
+
+                // Alternative: Use the Sign-In with Google One Tap / Button for ID Tokens
+                // google.accounts.id.initialize({
+                //     client_id: CLIENT_ID,
+                //     callback: handleCredentialResponse
+                // });
+
+                // google.accounts.id.renderButton(
+                //     document.getElementById("loginBtn"),
+                //     { theme: "outline", size: "large" }
+                // );
+            };
  
+            // The browser handles standard CORS because the server permits it.
+            const response = await fetch(url, {
+                method: 'POST', 			
+                headers: {
+                    'Authorization': `Bearer ${idToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ payloadParts: payloadParts })		
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+
+            const data = await response;
+            output.innerText = JSON.stringify(data);
+            // Display response text
+            //output.innerText = response.output_text; 
+        } catch (error) {
+            output.innerText = "Error: " + error.message;
+            console.error("Error calling Gemini API:", error);
+        } finally {
+            submitBtn.disabled = false;
+        } 
+    }
+
+    function fileToGenerativePart(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                // Extract the base64 data string by splitting off the data URL prefix 
+                const base64Data = reader.result.split(',')[1];
+                resolve({
+                    inlineData: {
+                        data: base64Data,
+                        mimeType: file.type
+                    },
+                });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
 </script>
 <script src="topRightDropdownMenu.js"></script>
 <script src="prescription.js"></script> 
