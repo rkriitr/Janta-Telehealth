@@ -1,0 +1,23 @@
+/* file uipload */
+#drop-zone {
+border: 2px dashed #ccc;
+border-radius: 8px;
+padding: 40px;
+text-align: center;
+cursor: pointer;
+background: #f9f9f9;
+transition: background 0.2s, border-color 0.2s;
+}
+
+#drop-zone.dragover {
+background: #e1f5fe;
+border-color: #03a9f4;
+}
+
+#file-list {
+margin-top: 15px;
+font-family: sans-serif;
+}
+
+/* Automatically adds a red asterisk after the label of any required input */
+input:required::placeholder {color: red;}
