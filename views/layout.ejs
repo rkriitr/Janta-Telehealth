@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+    <!-- Top of every page remains exactly the same -->
+    <!-- Header / Branding Framework -->
+    <header>
+        <div class="site-header">
+            <div class="header-spacer"></div>
+        	<div><h1>Janta Telehealth</h1></div>
+            
+            <!-- Top Right Dropdown Menu -->
+            <nav class="navbar">
+                <div class="dropdown">
+                    <!-- Trigger -->
+                    <button class="menu-trigger" id="dropdownBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar"><img src="/images/menu.png" alt="Menu" width="25" height="25"></div>
+                    </button>
+        
+                    <!-- Menu Content -->
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/">Investment Proposal</a>
+                        <a href="/prescriptionParser">Textify Prescriptions</a>
+                        <!-- <a href="#profile">My Profile</a>
+                        <a href="#settings">Account Settings</a>
+                        <a href="#help">Help & Support</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#logout" class="logout">Log Out</a> -->
+                    </div>
+                </div>
+            </nav>
+        </div> 
+        <p>Light-Asset Decentralized Micro-Clinics &amp; D2D2P Telehealth SaaS Addressing Rural India's Critical Human &amp; Livestock Healthcare Gaps</p>       
+    </header>
+    
+    <hr>
+
+    <script type="text/javascript" src="/js/layout.js"></script>
+    <!-- The changing page content is injected here -->
+    <%- body %>
+
+</body>
+</html>
