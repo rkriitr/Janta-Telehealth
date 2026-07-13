@@ -1,0 +1,19 @@
+{
+  "name": "janta-telehealth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "ejs": "^3.1.10",
+    "express-ejs-layouts": "latest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
