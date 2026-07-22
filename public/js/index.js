@@ -1,7 +1,7 @@
 /**
  * to send email via emailJS, public key is required
  */
-emailjs.init({ publicKey: "zUivy_q6tTPURjGIq" });
+emailjs.init({ publicKey: "zUivy_q6tTPURjGIq"});
 
 /**
  * Orchestrates the active visual visibility maps across the vector network grid
@@ -22,29 +22,39 @@ function switchPipeline(mode) {
         d2dFlow.style.opacity = '1';
         d2pFlow.style.opacity = '1';
         rmpNode.style.opacity = '1';
-        d2dImagesId .style.display= 'block';
+        d2dImagesId.style.display= 'block';
     } else if (mode === 'd2d') {
         d2dFlow.style.opacity = '1';
         d2pFlow.style.opacity = '0.1';
         rmpNode.style.opacity = '1';
-        d2dImagesId .style.display= 'block';
+        d2dImagesId.style.display= 'block';
     } else if (mode === 'd2p') {
         d2dFlow.style.opacity = '0.1';
         d2pFlow.style.opacity = '1';
         rmpNode.style.opacity = '0.1';
-        d2dImagesId .style.display= 'none';
+        d2dImagesId.style.display= 'none';
     }
 }
 
 /**
  * Emails the request for pitchdeck
+ * for security, implement later:- 
+ * 1. Allowed Origins: Navigate to Account -> Security
+ * 2. rate Limiting: Configure the IP-based rate limits in your 
+ * dashboard to prevent bots 
+ * 3. reCAPTCHA: Use reCAPTCHA to protect your forms from spam and abuse.
  */
 document.getElementById('contactForm').addEventListener('submit', function(event) {
     // 1. Stop the page from reloading
     event.preventDefault(); 
+    let form = event.target;
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
     
     // 2. Automatically grab all text fields via FormData
-    const formData = new FormData(event.target);
+    const formData = new FormData(form);
 
     // 3. Convert fields to a clean JavaScript object
     const data = Object.fromEntries(formData.entries());

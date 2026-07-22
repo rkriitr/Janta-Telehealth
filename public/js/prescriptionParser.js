@@ -1,103 +1,3 @@
-async function analyzeImages(fileList) {
-    if (fileList==null && fileList.length==0) {
-        output.innerText = "Please select an image file first.";
-        return;
-    }
-
-    try {
-        submitBtn.disabled = true;
-        output.innerText = "Analyzing image... Please wait...";
-
-        // Convert file to base64 structure
-        const imagePromises = fileList.map(fileToGenerativePart);
-        const imageParts = await Promise.all(imagePromises);
-        const textPrompt = {			
-            text: "Extract information from uploaded medical prescriptions. Return a JSON object with the following schema: {doctorName: string, patientName: string, date: string, medications: [{name: string, dosage: string, frequency: string, duration: string}]}"
-        };
-
-        // 3. Assemble everything into a single, flat contents parts array
-        const payloadParts = [textPrompt, ...imageParts];
-
-        const url = 'https://analyseimages-108214119816.asia-south1.run.app';
-        //var accessToken = "ya29.a0ARGnu0aYAHiU8uroiJ9wdpwtk8IC9wtkQg9QlVzaJds7H_GmB6XGfbg2sbMxc0nG3oMyWmyQvVArF55uqhticaRCHiNj-4O58k0y-a3QutEMTL81db4KnLlPntjZWGn4dD4VaXtUDQNBcZIDBSc6ticZXo3MKN9AABTzZ6WmgzntrnELwnbcKRk7baanNr3_eG4RHcwaCgYKAXwSARESFQHGX2MiHq1K2b5cDYpwQEF8ISBGVw0206"
-        //GetAccessTokenForRequestAsync();
-        
-        // Configuration
-        const CLIENT_ID = '108214119816-d6p8gaodsu3bcan7efnctd7v6rmpet7i.apps.googleusercontent.com';         
-        let tokenClient;
-        let idToken = null;
-
-        // Initialize Google Identity Services
-        window.onload = function () {
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: 'openid https://googleapis.com', 
-                callback: (tokenResponse) => {
-                    // Note: For Cloud Functions, we specifically need an ID Token.
-                    // Google's initTokenClient returns an Access Token by default.
-                    // To fetch a valid OIDC ID Token from the browser, we use the identity picker or standard flow.
-                    if(tokenResponse && tokenResponse.access_token) {
-                        idToken = tokenResponse.credential;
-                    }
-                }
-            });
-
-            // Alternative: Use the Sign-In with Google One Tap / Button for ID Tokens
-            // google.accounts.id.initialize({
-            //     client_id: CLIENT_ID,
-            //     callback: handleCredentialResponse
-            // });
-
-            // google.accounts.id.renderButton(
-            //     document.getElementById("loginBtn"),
-            //     { theme: "outline", size: "large" }
-            // );
-        };
-
-        // The browser handles standard CORS because the server permits it.
-        const response = await fetch(url, {
-            method: 'POST', 			
-            headers: {
-                //'Authorization': `Bearer ${idToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ payloadParts: payloadParts })		
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-        }
-
-        const data = await response;
-        output.innerText = JSON.stringify(data);
-        // Display response text
-        //output.innerText = response.output_text; 
-    } catch (error) {
-        output.innerText = "Error: " + error.message;
-        console.error("Error calling Gemini API:", error);
-    } finally {
-        submitBtn.disabled = false;
-    } 
-}
-
-function fileToGenerativePart(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            // Extract the base64 data string by splitting off the data URL prefix 
-            const base64Data = reader.result.split(',')[1];
-            resolve({
-                inlineData: {
-                    data: base64Data,
-                    mimeType: file.type
-                },
-            });
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-
 /**
  *	File upload
 **/
@@ -143,8 +43,12 @@ fileInput.addEventListener('change', (e) => {
 });
 
 function handleFiles(files){
-    // 1. Convert FileList to a standard array and append to master list            
-    const newFiles = Array.from(event.target.files);            
+    if(allFiles.length > 2) {  
+        alert("You can only upload a maximum of 2 images (front and back of prescription).");
+        return;
+    }  
+    // 1. Convert FileList to a standard array and append to master list       
+    const newFiles = Array.from(files || []);            
     allFiles = allFiles.concat(newFiles);          
     
     // 2. Rebuild the file input's internal FileList using DataTransfer            
@@ -204,3 +108,45 @@ const btn = document.getElementById("txtfyButton");
 btn.addEventListener("click", async () => {
     await analyzeImages(allFiles);
 });
+
+/**
+ * Node.js (Express): 100 KB default for raw/JSON bodies. 
+ * Popular parsers like Multer must have a specific limit configured manually.
+ * Needs to use either multer or file uploads
+**/
+async function analyzeImages(fileList) {
+    if (!fileList || fileList.length === 0) {
+        output.innerText = "Please select an image file first.";
+        return;
+    } else if (fileList.length > 2) {
+        output.innerText = "Please select only one prescription at a time (front and back, max 2 images).";
+        return;
+    }
+
+    try {
+        submitBtn.disabled = true;
+        output.innerText = "Analyzing image... Please wait...";
+
+        const formData = new FormData();
+        fileList.forEach((file) => {
+            formData.append('images', file);
+        });
+
+        const response = await fetch('/api/parse-prescription', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to parse prescription.');
+        }
+
+        output.innerText = typeof result.data === 'string' ? result.data : JSON.stringify(result.data || result, null, 2);
+    } catch (error) {
+        output.innerText = "Error: " + error.message;
+        console.error("Error calling Gemini API:", error);
+    } finally {
+        submitBtn.disabled = false;
+    }
+}
