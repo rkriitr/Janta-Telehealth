@@ -1,16 +1,54 @@
-// const { createServer } = require('http');
-const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
-const path = require('path');
+import 'dotenv/config'; 
+import express from 'express';
+import expressLayouts from 'express-ejs-layouts';
+import fs from 'fs';
+import path from 'path';
+import multer from 'multer';
+import * as geminiUtils from './services/googleAIStudioConnect.js';
+// import * as emailUtils from './services/emailService.js';
+
 const app = express();
-const PORT = 3000;
-const hostname = '127.0.0.1';
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '127.0.0.1';
 const distPath = path.join(process.cwd(), "public");
+const uploadDir = path.join(process.cwd(), 'uploads', 'prescriptions');
+
+// Create uploads directory on startup
+if (!fs.existsSync(uploadDir)){
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const ext = path.extname(file.originalname) || '.png';
+    cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024, files: 2 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error('Only image files are allowed.'));
+  }
+});
+/** 
+ * node 22.23.1 and npm 10.9.8, both out of support for 32 bit, 
+ * upgrade of the system required to use the latest version of both
+ */
 app.use(express.static(distPath));
+// Enable JSON body parsing
+app.use(express.json());
 
 // Increase payload limit to handle base64 prescription images
-app.use(express.json({ limit: "25mb" }));
-app.use(express.urlencoded({ limit: "25mb", extended: true }));
+app.use(express.json({ limit: 52428800 }));
+app.use(express.urlencoded({ limit: 52428800, extended: true }));
 
 // Set up EJS and Layouts
 app.set('view engine', 'ejs');
@@ -31,8 +69,70 @@ app.get('/prescriptionParser', (req, res) => {
   res.render('prescriptionParser', { title: 'Medical Prescription Parser' });
 });
 
-app.listen(PORT, hostname, () => {
-  console.log(`Server running at http://${hostname}:${PORT}/`);
+app.post('/api/parse-prescription', (req, res, next) => {
+  upload.array('images', 2)(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, error: err.message || 'Image upload failed.' });
+    }
+    next();
+  });
+}, async (req, res) => {
+  try {
+    let uploadedFiles = req.files;
+    if (!uploadedFiles || !Array.isArray(uploadedFiles) || uploadedFiles.length === 0) {
+        return res.status(400).send('No images uploaded or files are not in array format.');
+    } else if (uploadedFiles.length > 2) {
+        return res.status(400).send('Please upload only one prescription at a time (front and back, max 2 images).');
+    }
+    const images = uploadedFiles.map((file) => ({
+      path: file.path,
+      originalName: file.originalname,
+      mimeType: file.mimetype
+    }));
+
+    const result = await geminiUtils.textifyImages(images);
+    const rawText = result?.reply;
+
+    if (!rawText) {
+      return res.status(400).json({ success: false, error: 'No valid response received from Gemini.' });
+    }
+
+    let parsedData = rawText;
+    try {
+      parsedData = JSON.parse(rawText);
+    } catch {
+      // Keep the raw text if the response is not valid JSON.
+    }
+
+    return res.json({ success: true, message: 'Prescription parsed successfully.', data: parsedData });
+  } catch (error) {
+    console.error('Prescription parsing error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'An error occurred while parsing the prescription.',
+    });
+  }
+});
+
+// app.post('/api/email-pitchdeck', async (req, res) => {
+//   try {
+//     const formData = req.body;
+//     // formData should not be empty and should be an object
+//     if (!formData || typeof formData !== 'object') {
+//       return res.status(400).json({ success: false, error: 'Please fill the form' });
+//     }
+
+//     const result = await emailUtils.sendPitchDeckEmail(formData);
+//     return res.json({ success: true, message: 'Email sent successfully.', result });
+//   } catch (error) {
+//     console.error('Email sending failed:', error);
+//     return res.status(500).json({ success: false, error: error.message || 'Email could not be sent.' });
+//   }
+  
+// });
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server running at http://${HOST}:${PORT}/`);
 });
 
 // const server = createServer((req, res) => {
@@ -40,8 +140,8 @@ app.listen(PORT, hostname, () => {
 //   res.setHeader('Content-Type', 'text/plain');
 //   res.end('Hello World\n');
 // });
-// server.listen(PORT, hostname, () => {
-//   console.log(`Server running at http://${hostname}:${PORT}/`);
+// server.listen(PORT, HOST, () => {
+//   console.log(`Server running at http://${HOST}:${PORT}/`);
 // });
 
 
@@ -72,213 +172,6 @@ app.listen(PORT, hostname, () => {
 //   }
 //   return aiClient;
 // }
-
-// // Structured JSON schema for the prescription parser
-// const prescriptionSchema = {
-//   type: Type.OBJECT,
-//   properties: {
-//     patientName: { 
-//       type: Type.STRING, 
-//       description: "Full name of the patient. If not visible, return null or empty string." 
-//     },
-//     patientAge: { 
-//       type: Type.STRING, 
-//       description: "Age of the patient. (e.g. '28', '5 years', or null)" 
-//     },
-//     patientGender: { 
-//       type: Type.STRING, 
-//       description: "Gender of the patient. (e.g. 'Male', 'Female', or null)" 
-//     },
-//     doctorName: { 
-//       type: Type.STRING, 
-//       description: "Full name of the doctor with credentials (e.g., 'Dr. Jane Smith, MD')." 
-//     },
-//     doctorSpecialty: { 
-//       type: Type.STRING, 
-//       description: "Specialty/Department of the doctor (e.g., 'Pediatrician', 'Cardiologist')." 
-//     },
-//     doctorClinic: { 
-//       type: Type.STRING, 
-//       description: "Name of the clinic, hospital, or medical center." 
-//     },
-//     doctorContact: { 
-//       type: Type.STRING, 
-//       description: "Contact information (Phone number, Address, or Email) of the doctor/clinic." 
-//     },
-//     prescriptionDate: { 
-//       type: Type.STRING, 
-//       description: "Date of the prescription (e.g., YYYY-MM-DD, or as written in the text)." 
-//     },
-//     medicines: {
-//       type: Type.ARRAY,
-//       description: "List of all medications listed in the prescription.",
-//       items: {
-//         type: Type.OBJECT,
-//         properties: {
-//           name: { 
-//             type: Type.STRING, 
-//             description: "Name of the medicine (brand name or generic)." 
-//           },
-//           genericName: {
-//             type: Type.STRING,
-//             description: "The active pharmaceutical ingredient / chemical / salt name (e.g., 'Amoxicillin', 'Atorvastatin', 'Paracetamol')."
-//           },
-//           ethicalBrandExample: {
-//             type: Type.STRING,
-//             description: "An example of a popular premium ethical/branded version in India (e.g., 'Calpol 650', 'Augmentin 625 Duo', 'Atorva 10') with its estimated retail price range (e.g., '₹150 for 10 tablets')."
-//           },
-//           genericBrandExample: {
-//             type: Type.STRING,
-//             description: "An example of a low-cost generic equivalent or Pradhan Mantri Bhartiya Janaushadhi Pariyojana (PMBJP) equivalent in India with its estimated low-cost price (e.g., '₹35 for 10 tablets')."
-//           },
-//           estimatedSavingsPercent: {
-//             type: Type.INTEGER,
-//             description: "Estimated percentage saved by choosing the PMBJP / low-cost generic brand instead of the ethical brand (e.g., 75)."
-//           },
-//           dosage: { 
-//             type: Type.STRING, 
-//             description: "Dosage details (e.g., '500mg', '1 tablet', '5ml')." 
-//           },
-//           frequency: { 
-//             type: Type.STRING, 
-//             description: "Frequency of intake (e.g., 'Twice a day', '1-0-1', 'Every 8 hours', 'As needed')." 
-//           },
-//           duration: { 
-//             type: Type.STRING, 
-//             description: "Duration of the prescription (e.g., '5 days', '1 week', 'Continuous')." 
-//           },
-//           instructions: { 
-//             type: Type.STRING, 
-//             description: "Specific intake guidelines (e.g., 'After meals', 'Avoid dairy', 'Take with warm water')." 
-//           }
-//         },
-//         required: ["name", "genericName", "ethicalBrandExample", "genericBrandExample", "estimatedSavingsPercent"]
-//       }
-//     },
-//     additionalNotes: { 
-//       type: Type.STRING, 
-//       description: "Other instructions, symptoms, diagnoses, advice, general notes, or next follow-up date." 
-//     },
-//     confidenceScore: { 
-//       type: Type.INTEGER, 
-//       description: "Estimated percentage confidence (0-100) on overall transcription readability and medical matching." 
-//     }
-//   },
-//   required: ["patientName", "doctorName", "medicines"]
-// };
-
-// // API Endpoint to parse prescription
-// app.post("/api/parse-prescription", async (req, res) => {
-//   try {
-//     const { imageBase64, mimeType, prompt } = req.body;
-
-//     const ai = getGeminiClient();
-//     const parts: any[] = [];
-
-//     // Include the base64 image part if provided
-//     if (imageBase64 && mimeType) {
-//       // Strip out the data:image/...;base64, prefix if it exists
-//       const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
-//       parts.push({
-//         inlineData: {
-//           mimeType: mimeType,
-//           data: cleanBase64,
-//         }
-//       });
-//     }
-
-//     // Add instructions and prompts
-//     let promptText = "Analyze this medical prescription image or textual medical note. " +
-//                      "Extract all relevant information as specified in the schema. " +
-//                      "Be extremely precise. Handwriting can be difficult to read; use medical knowledge to find the correct pharmaceutical and clinical terms. " +
-//                      "If some details are missing, return reasonable defaults or null. " +
-//                      "Ensure confidenceScore is a realistic reflection of text legibility and completion.";
-
-//     if (prompt && prompt.trim() !== "") {
-//       promptText += `\n\nUser custom request/instructions: ${prompt.trim()}`;
-//     }
-
-//     parts.push({ text: promptText });
-
-//     const response = await ai.models.generateContent({
-//       model: "gemini-3.5-flash",
-//       contents: { parts },
-//       config: {
-//         responseMimeType: "application/json",
-//         responseSchema: prescriptionSchema,
-//         systemInstruction: "You are an expert pharmacist and clinical transcription system. Your core directive is to accurately read and parse handwritten or digital prescriptions, patient letters, and medical notes into clear, structured JSON data. Maintain absolute professional accuracy.",
-//       },
-//     });
-
-//     const parsedText = response.text;
-//     if (!parsedText) {
-//       throw new Error("Empty response received from Gemini.");
-//     }
-
-//     const data = JSON.parse(parsedText);
-//     res.json({ success: true, data });
-//   } catch (error: any) {
-//     console.error("Prescription parsing error:", error);
-//     res.status(500).json({ 
-//       success: false, 
-//       error: error.message || "An error occurred while parsing the prescription. Please verify your API Key and input." 
-//     });
-//   }
-// });
-
-// // API Endpoint to answer follow-up questions about the prescription
-// app.post("/api/ask-question", async (req, res) => {
-//   try {
-//     const { prescriptionData, question, imageBase64, mimeType } = req.body;
-//     if (!question) {
-//       return res.status(400).json({ success: false, error: "Question is required." });
-//     }
-
-//     const ai = getGeminiClient();
-//     const parts: any[] = [];
-
-//     if (imageBase64 && mimeType) {
-//       const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
-//       parts.push({
-//         inlineData: {
-//           mimeType: mimeType,
-//           data: cleanBase64,
-//         }
-//       });
-//     }
-
-//     let promptText = `You are a clinical pharmacologist and medical advisor.
-// The user has uploaded a medical prescription which was parsed into the following structured JSON:
-// ${JSON.stringify(prescriptionData, null, 2)}
-
-// User's follow-up question: "${question}"
-
-// Provide a professional, extremely helpful, clear, and easy-to-understand answer. 
-// Guidelines:
-// 1. Speak clearly to the patient (or physician) in a friendly but highly professional tone.
-// 2. If they ask about food interactions, drug-drug interactions, side effects, or safety, reference the parsed medicines.
-// 3. Keep the advice medically accurate, but structure it with simple bullet points so it is readable.
-// 4. **CRITICAL MANDATE**: Include a clear, standard clinical disclaimer at the end of your response, emphasizing that this is an AI transcription helper and they must consult their primary doctor or pharmacist before making any clinical changes.`;
-
-//     parts.push({ text: promptText });
-
-//     const response = await ai.models.generateContent({
-//       model: "gemini-3.5-flash",
-//       contents: { parts },
-//       config: {
-//         systemInstruction: "You are a friendly, professional clinical pharmacologist and healthcare assistant. You help patients understand their prescribed medicines, dosages, side effects, and precautions based on their prescription, but you always include a prominent professional disclaimer.",
-//       },
-//     });
-
-//     res.json({ success: true, answer: response.text });
-//   } catch (error: any) {
-//     console.error("Prescription follow-up question error:", error);
-//     res.status(500).json({ 
-//       success: false, 
-//       error: error.message || "An error occurred while answering your question." 
-//     });
-//   }
-// });
 
 // // Vite & Static file handling
 // async function startServer() {
